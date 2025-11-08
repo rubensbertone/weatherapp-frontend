@@ -21,6 +21,7 @@ import FavoriteLocationsFetcher from './components/FavoriteLocationsFetcher.vue'
 }
 
 header {
+  color: white;
   text-align: center;
   margin-bottom: 2rem;
 }

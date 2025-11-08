@@ -67,7 +67,7 @@ onMounted(() => {
 }
 
 h2 {
-  color: #42b983;
+  color: white;
   margin-bottom: 1.5rem;
 }
 

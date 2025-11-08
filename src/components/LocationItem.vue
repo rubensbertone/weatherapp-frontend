@@ -44,7 +44,7 @@ defineProps<{
 
 .location-item .country {
   margin: 0 0 0.5rem 0;
-  color: #42b983;
+  color: deepskyblue;
   font-weight: 500;
 }
 
