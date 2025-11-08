@@ -27,13 +27,21 @@ a,
 
 @media (min-width: 1024px) {
   body {
-    display: flex;
-    place-items: center;
+    display: block;
+    place-items: initial;
   }
 
-  #app {
+  body:not(.route-home) #app {
     display: grid;
     grid-template-columns: 1fr 1fr;
     padding: 0 2rem;
+  }
+
+  body.route-home #app {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2rem;
+    min-height: 100vh;
   }
 }

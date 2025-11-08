@@ -6,6 +6,9 @@ import router from './router'
 
 const app = createApp(App)
 
-app.use(router)
+router.afterEach((to) => {
+  document.body.classList.toggle('route-home', to.name === 'home')
+})
 
+app.use(router)
 app.mount('#app')
