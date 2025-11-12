@@ -88,7 +88,6 @@ const onSearchClick = () => {
   background: rgba(255,255,255,0.1);
 }
 
-/* Blur-out animation */
 .blur-out {
   animation: blurOut 400ms ease forwards;
 }

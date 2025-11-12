@@ -1,18 +1,34 @@
 <script setup lang="ts">
-import FavoriteLocationsFetcher from '../components/FavoriteLocationsFetcher.vue'
-</script>
+import { ref, onMounted } from 'vue'
+import LocationItem, { type FavoriteLocation } from './LocationItem.vue'
 
-<template>
-  <div class="favorite-view">
-    <FavoriteLocationsFetcher />
-  </div>
-</template>
+const locations = ref<FavoriteLocation[]>([])
+const loading = ref(true)
+const error = ref<string | null>(null)
 
-<style scoped>
-.favorite-view {
-  min-height: 80vh;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8080/favoriteLocations'
+
+const fetchLocations = async () => {
+  try {
+    loading.value = true
+    error.value = null
+
+    const response = await fetch(BACKEND_URL)
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    locations.value = await response.json()
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Ein Fehler ist aufgetreten'
+    console.error('Fehler beim Laden der Locations:', e)
+  } finally {
+    loading.value = false
+  }
 }
-</style>
+
+onMounted(() => {
+  fetchLocations()
+})
+</script>
