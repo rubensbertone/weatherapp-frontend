@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import LocationItem, { type FavoriteLocation } from './LocationItem.vue'
+import LocationItem, { type FavoriteLocation } from '../components/LocationItem.vue'
 
 const locations = ref<FavoriteLocation[]>([])
 const loading = ref(true)
