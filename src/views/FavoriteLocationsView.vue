@@ -6,14 +6,14 @@ const locations = ref<FavoriteLocation[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8080/favoriteLocations'
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8080'
 
 const fetchLocations = async () => {
   try {
     loading.value = true
     error.value = null
 
-    const response = await fetch(BACKEND_URL)
+    const response = await fetch(`${BACKEND_URL}/favoriteLocations`)
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
