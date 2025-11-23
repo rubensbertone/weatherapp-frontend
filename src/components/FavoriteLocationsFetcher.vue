@@ -6,14 +6,14 @@ const locations = ref<FavoriteLocation[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 
-const BACKEND_URL = 'http://localhost:8080/favoriteLocations'
+const VITE_BACKEND_URL = 'http://localhost:8080/favoriteLocations'
 
 const fetchLocations = async () => {
   try {
     loading.value = true
     error.value = null
 
-    const response = await fetch(BACKEND_URL)
+    const response = await fetch(VITE_BACKEND_URL)
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
