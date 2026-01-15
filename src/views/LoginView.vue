@@ -1,27 +1,3 @@
-<template>
-  <div class="login-container">
-    <h1>Login</h1>
-
-    <form @submit.prevent="performLogin">
-      <div class="form-group">
-        <label>Benutzername</label>
-        <input v-model="username" type="text" required placeholder="Name" />
-      </div>
-
-      <div class="form-group">
-        <label>Passwort</label>
-        <input v-model="password" type="password" required placeholder="Passwort" />
-      </div>
-
-      <button type="submit">Einloggen</button>
-    </form>
-
-    <div v-if="message" :class="['message', isSuccess ? 'success' : 'error']">
-      {{ message }}
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref } from 'vue';
 
@@ -30,6 +6,8 @@ const password = ref('');
 const message = ref('');
 const isSuccess = ref(false);
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8080';
+
 async function performLogin() {
   message.value = '';
   isSuccess.value = false;
@@ -37,7 +15,7 @@ async function performLogin() {
   const authHeader = 'Basic ' + btoa(username.value + ':' + password.value);
 
   try {
-    const response = await fetch('http://localhost:8080/login', {
+    const response = await fetch(`${BACKEND_URL}/login`, {
       method: 'GET',
       headers: {
         'Authorization': authHeader,
@@ -49,7 +27,7 @@ async function performLogin() {
       const text = await response.text();
       isSuccess.value = true;
       message.value = text;
-
+      // Hier könntest du nach Erfolg weiterleiten: router.push('/')
     } else {
       isSuccess.value = false;
       message.value = 'Login fehlgeschlagen. Falsche Daten?';
@@ -62,12 +40,94 @@ async function performLogin() {
 }
 </script>
 
+<template>
+  <div class="auth-page">
+    <div class="glass-card">
+      <h1 class="title">Login</h1>
+      <p class="subtitle">Schön, dass du wieder da bist!</p>
+
+      <form @submit.prevent="performLogin">
+        <div class="form-group">
+          <label>Benutzername</label>
+          <input v-model="username" type="text" required placeholder="Dein Name" />
+        </div>
+
+        <div class="form-group">
+          <label>Passwort</label>
+          <input v-model="password" type="password" required placeholder="••••••••" />
+        </div>
+
+        <button type="submit" class="btn-auth">Einloggen</button>
+      </form>
+
+      <div v-if="message" :class="['message-box', isSuccess ? 'success' : 'error']">
+        {{ message }}
+      </div>
+
+      <div class="switch-auth">
+        Noch kein Account? <router-link to="/register">Registrieren</router-link>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped>
-.login-container { max-width: 400px; margin: 2rem auto; padding: 2rem; border: 1px solid #ddd; border-radius: 8px; }
-.form-group { margin-bottom: 1rem; }
-input { width: 100%; padding: 0.5rem; margin-top: 0.2rem; }
-button { width: 100%; padding: 0.75rem; background-color: #3182ce; color: white; border: none; border-radius: 4px; cursor: pointer; }
-.message { margin-top: 1rem; padding: 0.5rem; text-align: center; }
-.success { color: green; background-color: #f0fff4; }
-.error { color: red; background-color: #fff5f5; }
+.auth-page {
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 2.5rem;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.title { color: #fff; text-align: center; margin-bottom: 0.5rem; }
+.subtitle { color: rgba(255,255,255,0.8); text-align: center; margin-bottom: 2rem; font-size: 0.9rem; }
+
+.form-group { margin-bottom: 1.2rem; }
+label { display: block; color: white; margin-bottom: 0.4rem; font-size: 0.9rem; font-weight: 600; }
+
+input {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.9);
+  font-size: 1rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.btn-auth {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #0b6b8c;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s;
+  margin-top: 1rem;
+}
+
+.btn-auth:hover { transform: translateY(-2px); background-color: #095a75; }
+
+.message-box { margin-top: 1.5rem; padding: 0.8rem; border-radius: 12px; text-align: center; font-weight: 600; }
+.success { background: rgba(72, 187, 120, 0.2); color: #c6f6d5; border: 1px solid rgba(72, 187, 120, 0.4); }
+.error { background: rgba(245, 101, 101, 0.2); color: #fed7d7; border: 1px solid rgba(245, 101, 101, 0.4); }
+
+.switch-auth { margin-top: 1.5rem; text-align: center; color: white; font-size: 0.9rem; }
+.switch-auth a { color: #fff; font-weight: 700; text-decoration: none; }
 </style>
