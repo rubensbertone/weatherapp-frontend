@@ -18,9 +18,10 @@
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #a8e6ff 0%, #ffffff 100%);
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   min-height: 100vh;
-  color: #2c3e50;
+  display: flex;
+  flex-direction: column;
 }
 
 .navbar {

@@ -81,14 +81,19 @@ async function performLogin() {
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 2.5rem;
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+
+  padding: 3rem 2rem;
   border-radius: 24px;
+  text-align: center;
+
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  max-width: 450px;
 }
 
 .title { color: #fff; text-align: center; margin-bottom: 0.5rem; }
