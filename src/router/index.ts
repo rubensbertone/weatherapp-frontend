@@ -24,8 +24,8 @@ const router = createRouter({
       component: () => import('@/views/LoginView.vue')
     },
     {
-      path: '/favorite-locations',
-      name: 'favorite-locations',
+      path: '/favoriteLocations',
+      name: 'favoriteLocations',
       component: () => import('@/views/FavoriteLocationsView.vue')
     }
   ]

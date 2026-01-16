@@ -6,14 +6,22 @@ const locations = ref<FavoriteLocation[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8080'
+const BACKEND_URL = import.meta.env. VITE_BACKEND_URL ??  'http://localhost:8080'
 
 const fetchLocations = async () => {
   try {
     loading.value = true
     error.value = null
 
-    const response = await fetch(`${BACKEND_URL}/favoriteLocations`)
+    const token = localStorage. getItem('token')
+
+    const response = await fetch(`${BACKEND_URL}/favoriteLocations`, {
+      method: 'GET',
+      headers: {
+        'Authorization': token || '',
+        'Content-Type': 'application/json'
+      }
+    })
 
     if (!response.ok) {
       throw new Error(`Status: ${response.status}`)
@@ -21,7 +29,7 @@ const fetchLocations = async () => {
 
     locations.value = await response.json()
   } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Ein Fehler ist aufgetreten'
+    error.value = e instanceof Error ?  e.message : 'Ein Fehler ist aufgetreten'
     console.error(e)
   } finally {
     loading.value = false
@@ -92,7 +100,7 @@ onMounted(() => {
 .error-message {
   padding: 1.5rem;
   background-color: #ffebee;
-  border-left: 5px solid #ef5350;
+  border-left:  5px solid #ef5350;
   border-radius: 8px;
   color: #c62828;
   margin-bottom: 1rem;
@@ -100,7 +108,7 @@ onMounted(() => {
 
 .loader {
   display: inline-block;
-  animation: spin 2s linear infinite;
+  animation:  spin 2s linear infinite;
 }
 
 @keyframes spin {
