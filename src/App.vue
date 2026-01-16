@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
-const TOKEN_KEY = 'token' // ggf. anpassen, falls euer Token anders gespeichert wird
+const TOKEN_KEY = 'token'
 
 const router = useRouter()
 const route = useRoute()
@@ -47,6 +47,7 @@ watch(
         <!-- Login nur anzeigen, wenn NICHT eingeloggt -->
         <router-link v-if="!isLoggedIn" to="/login" class="nav-btn">Login</router-link>
 
+        <!-- Optional: Logout, wenn eingeloggt -->
         <button v-if="isLoggedIn" class="nav-btn logout-btn" type="button" @click="logout">
           Logout
         </button>
@@ -69,6 +70,12 @@ body {
   flex-direction: column;
 }
 
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -77,6 +84,13 @@ body {
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .nav-links {
@@ -98,6 +112,7 @@ body {
   border-radius: 8px;
   border: none;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .logout-btn {
