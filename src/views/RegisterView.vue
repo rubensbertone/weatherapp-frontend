@@ -75,7 +75,6 @@ async function registerUser() {
 </template>
 
 <style scoped>
-/* Das CSS ist identisch zur LoginView für ein konsistentes Design */
 .auth-page {
   min-height: 90vh;
   display: flex;

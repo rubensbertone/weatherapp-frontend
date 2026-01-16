@@ -1,19 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
-const isBlurring = ref(false)
 const showSearch = ref(false)
 const searchQuery = ref('')
-
-const goToFavorites = () => {
-  if (isBlurring.value) return
-  isBlurring.value = true
-  setTimeout(() => {
-    router.push({ name: 'favorite-locations' })
-  }, 400)
-}
 
 const onSearchClick = () => {
   showSearch.value = !showSearch.value
@@ -21,15 +10,15 @@ const onSearchClick = () => {
 
 const handleSearch = () => {
   if (searchQuery.value.trim()) {
-    console.log("Suche nach Stadt:", searchQuery.value)
+    console.log('Suche nach Stadt:', searchQuery.value)
   }
 }
 </script>
 
 <template>
-  <div class="home" :class="{ 'blur-out': isBlurring }">
+  <div class="home">
     <div class="glass-card">
-      <h1 class="title">Wetter App</h1>
+      <h1 class="title">Weather App</h1>
 
       <p class="subtitle">Finde das aktuelle Wetter für deine Lieblingsorte</p>
 
@@ -47,11 +36,8 @@ const handleSearch = () => {
       </Transition>
 
       <div class="actions">
-        <button class="btn primary" @click="goToFavorites">
-          <span class="icon">⭐</span> Favorite Locations
-        </button>
         <button class="btn outline" @click="onSearchClick">
-          <span class="icon">🔍</span> {{ showSearch ? 'Abbrechen' : 'Search' }}
+          {{ showSearch ? 'Abbrechen' : 'Search' }}
         </button>
       </div>
 
@@ -100,7 +86,7 @@ const handleSearch = () => {
   margin: 0 0 0.5rem 0;
   font-weight: 800;
   letter-spacing: -1px;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .subtitle {
@@ -167,12 +153,6 @@ const handleSearch = () => {
   border: none;
 }
 
-.primary {
-  background: #ffffff;
-  color: #0b6b8c;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
 .outline {
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
@@ -181,7 +161,7 @@ const handleSearch = () => {
 
 .btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
 }
 
 .btn:active {
@@ -225,20 +205,14 @@ const handleSearch = () => {
 }
 
 /* Animationen */
-.fade-slide-enter-active, .fade-slide-leave-active {
+.fade-slide-enter-active,
+.fade-slide-leave-active {
   transition: all 0.3s ease;
 }
-.fade-slide-enter-from, .fade-slide-leave-to {
+
+.fade-slide-enter-from,
+.fade-slide-leave-to {
   opacity: 0;
   transform: translateY(-10px);
-}
-
-.blur-out {
-  animation: blurOut 400ms ease forwards;
-}
-
-@keyframes blurOut {
-  0% { filter: blur(0px); opacity: 1; }
-  100% { filter: blur(10px); opacity: 0; }
 }
 </style>

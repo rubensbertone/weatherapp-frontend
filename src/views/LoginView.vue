@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const username = ref('');
 const password = ref('');
 const message = ref('');
 const isSuccess = ref(false);
+
+const router = useRouter();
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8080';
 
@@ -27,7 +30,14 @@ async function performLogin() {
       const text = await response.text();
       isSuccess.value = true;
       message.value = text;
-      // Hier könntest du nach Erfolg weiterleiten: router.push('/')
+
+      // Token/Auth-Header im localStorage speichern
+      localStorage.setItem('token', authHeader);
+
+      // Kurz warten, damit der Nutzer die Erfolgsmeldung sieht, dann weiterleiten
+      setTimeout(() => {
+        router.push('/');
+      }, 1000);
     } else {
       isSuccess.value = false;
       message.value = 'Login fehlgeschlagen. Falsche Daten?';
