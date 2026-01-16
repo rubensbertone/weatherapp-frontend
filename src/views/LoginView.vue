@@ -19,7 +19,7 @@ async function performLogin() {
 
   try {
     const response = await fetch(`${BACKEND_URL}/login`, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Authorization': authHeader,
         'Content-Type': 'application/json'
