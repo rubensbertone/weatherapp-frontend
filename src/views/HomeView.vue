@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const showSearch = ref(false)
 const searchQuery = ref('')
+
+const isLoggedIn = computed(() => !!localStorage.getItem('token'))
 
 const onSearchClick = () => {
   showSearch.value = !showSearch.value
@@ -41,7 +43,7 @@ const handleSearch = () => {
         </button>
       </div>
 
-      <div class="auth-footer">
+      <div v-if="!isLoggedIn" class="auth-footer">
         <p>Möchtest du deine Orte speichern?</p>
         <div class="auth-links">
           <router-link to="/login" class="auth-link">Login</router-link>
