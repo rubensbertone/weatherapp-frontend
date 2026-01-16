@@ -15,7 +15,7 @@ async function performLogin() {
   message.value = '';
   isSuccess.value = false;
 
-  const authHeader = 'Basic ' + btoa(username.value + ':' + password.value);
+  const authHeader = 'Basic ' + btoa(username.value + ':' + password. value);
 
   try {
     const response = await fetch(`${BACKEND_URL}/login`, {
@@ -27,27 +27,26 @@ async function performLogin() {
     });
 
     if (response.ok) {
-      const text = await response.text();
+      const data = await response.json();
       isSuccess.value = true;
-      message.value = text;
+      message.value = `Willkommen, ${data.username}!`;
 
-      // Token/Auth-Header im localStorage speichern
       localStorage.setItem('token', authHeader);
 
-      // Kurz warten, damit der Nutzer die Erfolgsmeldung sieht, dann weiterleiten
       setTimeout(() => {
         router.push('/');
       }, 1000);
     } else {
       isSuccess.value = false;
-      message.value = 'Login fehlgeschlagen. Falsche Daten?';
+      message.value = 'Login fehlgeschlagen. Falsche Daten? ';
     }
   } catch (error) {
     console.error(error);
     isSuccess.value = false;
-    message.value = 'Server nicht erreichbar.';
+    message.value = 'Server nicht erreichbar. ';
   }
 }
+
 </script>
 
 <template>
