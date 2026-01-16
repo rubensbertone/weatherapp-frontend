@@ -64,16 +64,24 @@ watch(
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+#app {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  min-height: 100vh;
 }
 
 .app-layout {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
 }
 
 .navbar {
@@ -91,6 +99,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
 
 .nav-links {
