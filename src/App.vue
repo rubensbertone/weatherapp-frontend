@@ -42,7 +42,7 @@ watch(
 
       <div class="nav-links">
         <!-- Favoriten nur anzeigen, wenn eingeloggt -->
-        <router-link v-if="isLoggedIn" to="/favorite-locations">Favoriten</router-link>
+        <router-link v-if="isLoggedIn" to="/favoriteLocations">Favoriten</router-link>
 
         <!-- Login nur anzeigen, wenn NICHT eingeloggt -->
         <router-link v-if="!isLoggedIn" to="/login" class="nav-btn">Login</router-link>
