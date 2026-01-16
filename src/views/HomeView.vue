@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const showSearch = ref(false)
 const searchQuery = ref('')
+const isLoggedIn = ref(false)
 
-const isLoggedIn = computed(() => !!localStorage.getItem('token'))
+const updateAuthState = () => {
+  isLoggedIn.value = !!localStorage.getItem('token')
+}
 
 const onSearchClick = () => {
   showSearch.value = !showSearch.value
@@ -15,6 +18,17 @@ const handleSearch = () => {
     console.log('Suche nach Stadt:', searchQuery.value)
   }
 }
+
+onMounted(() => {
+  updateAuthState()
+  window.addEventListener('auth-changed', updateAuthState)
+  window.addEventListener('storage', updateAuthState)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('auth-changed', updateAuthState)
+  window.removeEventListener('storage', updateAuthState)
+})
 </script>
 
 <template>

@@ -11,6 +11,7 @@ const isLoggedIn = ref(false)
 
 const updateAuthState = () => {
   isLoggedIn.value = !!localStorage.getItem(TOKEN_KEY)
+  window.dispatchEvent(new CustomEvent('auth-changed'))
 }
 
 const logout = async () => {
@@ -21,8 +22,6 @@ const logout = async () => {
 
 onMounted(() => {
   updateAuthState()
-
-  // Falls Login/Logout in einem anderen Tab passiert
   window.addEventListener('storage', updateAuthState)
 })
 
@@ -30,7 +29,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('storage', updateAuthState)
 })
 
-// Nach jeder Navigation Auth-Status neu prüfen (z.B. nach Login-Redirect)
 watch(
   () => route.fullPath,
   () => updateAuthState(),
@@ -49,7 +47,6 @@ watch(
         <!-- Login nur anzeigen, wenn NICHT eingeloggt -->
         <router-link v-if="!isLoggedIn" to="/login" class="nav-btn">Login</router-link>
 
-        <!-- Optional: Logout, wenn eingeloggt -->
         <button v-if="isLoggedIn" class="nav-btn logout-btn" type="button" @click="logout">
           Logout
         </button>
