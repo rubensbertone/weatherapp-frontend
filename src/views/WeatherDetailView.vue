@@ -40,6 +40,13 @@ interface WeatherData {
   }>
 }
 
+interface FavoriteItem {
+  latitude: number
+  longitude: number
+  locationName?: string
+  country?: string
+}
+
 const route = useRoute()
 const router = useRouter()
 
@@ -74,18 +81,6 @@ const getAqiColor = (aqi: number): string => {
   if (aqi <= 300) return '#9c27b0'
   return '#8b0000'
 }
-
-const getAlertSeverityLabel = (severity: string): string => {
-  const severityMap: Record<string, string> = {
-    'extreme': 'Extrem',
-    'severe': 'Schwer',
-    'moderate': 'Mittel',
-    'minor': 'Gering',
-    'unknown': 'Unbekannt'
-  }
-  return severityMap[severity?.toLowerCase()] || severity || 'Warnung'
-}
-
 const fetchWeatherData = async () => {
   loading.value = true
   error.value = null
@@ -98,12 +93,16 @@ const fetchWeatherData = async () => {
     weatherData.value = {
       ...data,
       current: {
-        ...data.current,
-        feelsLike: data.current.feelsLike ?? data.current.feels_like ?? data.current.temp,
-        windSpeed: data.current.windSpeed ?? data.current.wind_speed ?? 0,
-        windDirection: data.current.windDirection ?? data.current.wind_direction ?? '',
-        uvIndex: data.current.uvIndex ?? data.current.uv_index ?? 0,
-        cloudCover: data.current.cloudCover ?? data.current.cloud_cover ?? 0
+        temp: data.current?.temp ?? data.current?.temperature ?? 0,
+        feelsLike: data.current?.feelsLike ?? data.current?.feels_like ?? data.current?.temp ?? 0,
+        description: data.current?.description ?? 'Keine Beschreibung',
+        humidity: data.current?.humidity ?? 0,
+        windSpeed: data.current?.windSpeed ?? data.current?.wind_speed ?? 0,
+        windDirection: data.current?.windDirection ?? data.current?.wind_direction ?? '',
+        pressure: data.current?.pressure ?? 0,
+        visibility: data.current?.visibility ?? 0,
+        uvIndex: data.current?.uvIndex ?? data.current?.uv_index ?? 0,
+        cloudCover: data.current?.cloudCover ?? data.current?.cloud_cover ?? 0
       }
     }
   } catch (e) {
@@ -125,8 +124,8 @@ const checkIfFavorite = async () => {
       headers: { 'Authorization': token }
     })
     if (response.ok) {
-      const favorites = await response.json()
-      isFavorite.value = favorites.some((fav: any) =>
+      const favorites: FavoriteItem[] = await response.json()
+      isFavorite.value = favorites.some((fav: FavoriteItem) =>
         Math.abs(fav.latitude - lat.value) < 0.01 &&
         Math.abs(fav.longitude - lon.value) < 0.01
       )
@@ -137,54 +136,32 @@ const checkIfFavorite = async () => {
 }
 
 const toggleFavorite = async () => {
-  if (!isAuth.value) {
-    router.push('/login')
-    return
-  }
-
+  if (!isAuth.value) { router.push('/login'); return }
   const token = localStorage.getItem('token')
   if (!token) return
-
   favLoading.value = true
   try {
     if (isFavorite.value) {
       const response = await fetch(`${BACKEND_URL}/favoriteLocations?lat=${lat.value}&lon=${lon.value}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': token }
+        method: 'DELETE', headers: { 'Authorization': token }
       })
       if (response.ok) isFavorite.value = false
     } else {
       const response = await fetch(`${BACKEND_URL}/favoriteLocations`, {
         method: 'POST',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          locationName: cityName.value,
-          country: country.value,
-          latitude: lat.value,
-          longitude: lon.value
+          locationName: cityName.value, country: country.value,
+          latitude: lat.value, longitude: lon.value
         })
       })
       if (response.ok) isFavorite.value = true
     }
-  } catch (e) {
-    console.error(e)
-  } finally {
-    favLoading.value = false
-  }
+  } catch (e) { console.error(e) } finally { favLoading.value = false }
 }
 
-watch([lat, lon], () => {
-  fetchWeatherData()
-  checkIfFavorite()
-})
-
-onMounted(() => {
-  fetchWeatherData()
-  checkIfFavorite()
-})
+watch([lat, lon], () => { fetchWeatherData(); checkIfFavorite() })
+onMounted(() => { fetchWeatherData(); checkIfFavorite() })
 </script>
 
 <template>
@@ -206,13 +183,7 @@ onMounted(() => {
         <div class="location-header">
           <div class="header-row">
             <h1>{{ cityName }}</h1>
-            <button
-              v-if="isAuth"
-              class="fav-circle-btn"
-              @click="toggleFavorite"
-              :disabled="favLoading"
-              :class="{ 'is-saved': isFavorite }"
-            >
+            <button v-if="isAuth" class="fav-circle-btn" @click="toggleFavorite" :disabled="favLoading" :class="{ 'is-saved': isFavorite }">
               <span v-if="favLoading">⏳</span>
               <span v-else>{{ isFavorite ? '❤️' : '🤍' }}</span>
             </button>
@@ -233,13 +204,13 @@ onMounted(() => {
             </div>
           </div>
           <div class="current-details">
-            <div class="detail-item" v-if="weatherData.current.humidity !== null">
+            <div class="detail-item">
               <div class="detail-label">Luftfeuchtigkeit</div>
               <div class="detail-value">{{ weatherData.current.humidity }}%</div>
             </div>
             <div class="detail-item">
               <div class="detail-label">Wind</div>
-              <div class="detail-value">{{ Math.round(weatherData.current.windSpeed) }} km/h {{ weatherData.current.windDirection }}</div>
+              <div class="detail-value">{{ Math.round(weatherData.current.windSpeed) }} km/h</div>
             </div>
             <div class="detail-item">
               <div class="detail-label">UV-Index</div>
@@ -285,21 +256,31 @@ onMounted(() => {
           </div>
         </div>
 
-        <div v-if="weatherData.airQuality?.aqi" class="air-quality glass-card">
+        <div v-if="weatherData.airQuality" class="air-quality glass-card">
           <div class="section-header"><h2>Luftqualität</h2></div>
           <div class="aqi-display">
             <div class="aqi-value" :style="{ backgroundColor: getAqiColor(weatherData.airQuality.aqi) + '40' }">
               <div class="aqi-number" :style="{ color: getAqiColor(weatherData.airQuality.aqi) }">{{ weatherData.airQuality.aqi }}</div>
               <div class="aqi-label">{{ weatherData.airQuality.category || 'AQI' }}</div>
             </div>
-          </div>
-        </div>
-
-        <div v-if="weatherData.alerts?.length" class="alerts glass-card">
-          <div class="section-header"><h2>Wetterwarnungen</h2></div>
-          <div v-for="(alert, index) in weatherData.alerts" :key="index" class="alert-item" :class="`alert-${alert.severity?.toLowerCase()}`">
-            <div class="alert-type">{{ getAlertSeverityLabel(alert.severity) }}</div>
-            <div class="alert-message">{{ alert.message || alert.type }}</div>
+            <div class="pollutants">
+              <div v-if="weatherData.airQuality.pm25" class="pollutant-item">
+                <div class="pollutant-name">PM2.5</div>
+                <div class="pollutant-value">{{ weatherData.airQuality.pm25.toFixed(1) }} µg/m³</div>
+              </div>
+              <div v-if="weatherData.airQuality.pm10" class="pollutant-item">
+                <div class="pollutant-name">PM10</div>
+                <div class="pollutant-value">{{ weatherData.airQuality.pm10.toFixed(1) }} µg/m³</div>
+              </div>
+              <div v-if="weatherData.airQuality.o3" class="pollutant-item">
+                <div class="pollutant-name">O₃</div>
+                <div class="pollutant-value">{{ weatherData.airQuality.o3.toFixed(1) }} µg/m³</div>
+              </div>
+              <div v-if="weatherData.airQuality.no2" class="pollutant-item">
+                <div class="pollutant-name">NO₂</div>
+                <div class="pollutant-value">{{ weatherData.airQuality.no2.toFixed(1) }} µg/m³</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -310,39 +291,44 @@ onMounted(() => {
 <style scoped>
 .weather-detail { width: 100%; min-height: 100vh; padding: 2rem; display: flex; justify-content: center; }
 .weather-container { max-width: 1200px; width: 100%; }
-.back-button { background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); color: white; padding: 0.75rem 1.5rem; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; margin-bottom: 2rem; font-weight: 600; }
-.back-button:hover { background: rgba(255, 255, 255, 0.4); transform: translateX(-5px); }
-.location-header { text-align: center; margin-bottom: 2rem; }
+.back-button { background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.5); color: white; padding: 0.75rem 1.5rem; border-radius: 12px; cursor: pointer; margin-bottom: 2rem; font-weight: 600; }
+.location-header { text-align: center; margin-bottom: 2rem; color: white; }
 .header-row { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-bottom: 0.5rem; }
-.location-header h1 { color: white; font-size: 3.5rem; margin: 0; font-weight: 800; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+.location-header h1 { font-size: 3.5rem; margin: 0; font-weight: 800; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 .fav-circle-btn { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.4); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; font-size: 1.5rem; }
-.fav-circle-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.4); transform: scale(1.1); }
-.fav-circle-btn.is-saved { background: rgba(255, 255, 255, 0.3); border-color: rgba(255, 255, 255, 0.6); }
-.location-info { color: rgba(255, 255, 255, 0.9); font-size: 1.2rem; margin: 0.5rem 0; font-weight: 500; }
 .coordinates { color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; font-family: monospace; }
-.glass-card { background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.5); padding: 2rem; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); margin-bottom: 1.5rem; }
-.section-header { margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 0.5rem; }
-.section-header h2 { color: white; font-size: 1.5rem; margin: 0; }
-.temperature { color: white; font-size: 5rem; font-weight: 800; line-height: 1; }
-.feels-like { color: rgba(255,255,255,0.8); font-size: 1.2rem; margin-top: 0.5rem; }
-.description { color: white; font-size: 1.4rem; text-transform: capitalize; margin-top: 0.5rem; }
-.current-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 2rem; }
-.detail-item { background: rgba(255,255,255,0.15); padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); }
-.detail-label { color: rgba(255,255,255,0.7); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-.detail-value { color: white; font-size: 1.2rem; font-weight: 600; margin-top: 0.3rem; }
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.5); padding: 2rem;
+  border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem; color: #1a3a4a;
+}
+
+.section-header { margin-bottom: 1.5rem; border-bottom: 1px solid rgba(26, 58, 74, 0.2); padding-bottom: 0.5rem; }
+.section-header h2 { color: #1a3a4a; font-size: 1.5rem; margin: 0; font-weight: 700; }
+
+.temperature { color: #1a3a4a; font-size: 5rem; font-weight: 800; line-height: 1; }
+.feels-like { color: #4a6a7a; font-size: 1.2rem; margin-top: 0.5rem; font-weight: 600; }
+.description { color: #1a3a4a; font-size: 1.4rem; text-transform: capitalize; margin-top: 0.5rem; font-weight: 600; }
+
+.current-details, .pollutants { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 2rem; }
+.detail-item, .pollutant-item { background: rgba(255, 255, 255, 0.4); padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.5); text-align: center; }
+.detail-label, .pollutant-name { color: #4a6a7a; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; margin-bottom: 0.3rem; }
+.detail-value, .pollutant-value { color: #1a3a4a; font-size: 1.3rem; font-weight: 700; }
+
 .hourly-scroll { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; }
-.hourly-item { flex-shrink: 0; background: rgba(255,255,255,0.15); padding: 1rem 1.5rem; border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.2); }
+.hourly-item { flex-shrink: 0; background: rgba(255, 255, 255, 0.4); padding: 1rem 1.5rem; border-radius: 16px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.5); min-width: 90px; }
+
 .forecast-list { display: flex; flex-direction: column; gap: 0.8rem; }
-.forecast-item { display: grid; grid-template-columns: 140px 1fr auto; align-items: center; padding: 1rem; background: rgba(255,255,255,0.15); border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); }
-.loading-state, .error-state { text-align: center; padding: 4rem; background: rgba(255,255,255,0.2); border-radius: 24px; border: 1px solid rgba(255,255,255,0.4); }
+.forecast-item { display: grid; grid-template-columns: 140px 1fr auto; align-items: center; padding: 1.2rem; background: rgba(255, 255, 255, 0.4); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.5); }
+
+.aqi-display { display: flex; flex-direction: column; gap: 2rem; }
+.aqi-value { display: flex; flex-direction: column; align-items: center; padding: 2.5rem; border-radius: 16px; border: 2px solid rgba(255, 255, 255, 0.3); }
+.aqi-number { font-size: 4rem; font-weight: 700; line-height: 1; }
+.aqi-label { font-size: 1.1rem; color: #1a3a4a; margin-top: 0.75rem; font-weight: 600; text-transform: uppercase; }
+
+.loading-state, .error-state { text-align: center; padding: 4rem; color: white; }
 .loader { width: 40px; height: 40px; border: 4px solid #fff; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: spin 1s linear infinite; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-.aqi-value { display: flex; flex-direction: column; align-items: center; padding: 2rem; border-radius: 20px; text-align: center; }
-.aqi-number { font-size: 3.5rem; font-weight: 800; }
-.aqi-label { color: white; font-weight: 600; margin-top: 0.5rem; }
-@media (max-width: 768px) {
-  .location-header h1 { font-size: 2.5rem; }
-  .temperature { font-size: 3.5rem; }
-  .forecast-item { grid-template-columns: 1fr; gap: 0.5rem; text-align: center; }
-}
 </style>
