@@ -547,10 +547,6 @@ onMounted(() => {
   border-radius: 16px;
 }
 
-.aqi-gut {
-  background: rgba(72, 187, 120, 0.3);
-}
-
 .aqi-number {
   font-size: 3rem;
   font-weight: 700;
@@ -598,10 +594,6 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   border-left: 4px solid;
-}
-
-.alert-medium {
-  border-left-color: #ff9800;
 }
 
 .alert-type {

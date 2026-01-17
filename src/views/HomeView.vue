@@ -415,30 +415,7 @@ const closeSuggestions = () => {
   color: white;
 }
 
-/* Animationen */
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: all 0.3s ease;
-}
 
-.fade-slide-enter-from,
-.fade-slide-leave-to {
-  opacity: 0;
-  transform:  translateY(-10px);
-}
-
-.dropdown-enter-active,
-.dropdown-leave-active {
-  transition: all 0.2s ease;
-}
-
-.dropdown-enter-from,
-.dropdown-leave-to {
-  opacity: 0;
-  transform:  translateY(-5px);
-}
-
-/* Scrollbar Styling für Dropdown */
 .dropdown-list::-webkit-scrollbar {
   width: 8px;
 }
