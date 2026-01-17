@@ -86,8 +86,18 @@ const onInput = () => {
 const selectCity = (city: CitySearchResult) => {
   searchQuery.value = `${city.name}, ${city. country}`
   suggestions.value = []
-  hasSearched.value = false  // ✅ Reset nach Auswahl
-  console.log('Stadt ausgewählt:', city)
+  hasSearched.value = false
+
+  router.push({
+    name: 'weather',
+    params: { city: city.name },
+    query: {
+      lat: city.lat. toString(),
+      lon: city.lon.toString(),
+      country: city.country,
+      state: city.state || ''
+    }
+  })
 }
 
 const onSearchClick = () => {
@@ -104,24 +114,6 @@ const closeSuggestions = () => {
     suggestions.value = []
   }, 200)
 }
-
-const selectCity = (city: CitySearchResult) => {
-  searchQuery.value = `${city.name}, ${city. country}`
-  suggestions.value = []
-  hasSearched.value = false
-
-  router.push({
-    name: 'weather',
-    params: { city: city.name },
-    query: {
-      lat: city.lat. toString(),
-      lon: city.lon.toString(),
-      country: city.country,
-      state: city.state || ''
-    }
-  })
-}
-
 
 </script>
 
