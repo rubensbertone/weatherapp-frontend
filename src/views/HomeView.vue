@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
@@ -116,6 +116,18 @@ const closeSuggestions = () => {
   }, 200)
 }
 
+const checkLoginStatus = () => {
+  isLoggedIn.value = !!localStorage.getItem('token')
+}
+
+onMounted(() => {
+  checkLoginStatus()
+  window.addEventListener('auth-changed', checkLoginStatus)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('auth-changed', checkLoginStatus)
+})
 </script>
 
 <template>
