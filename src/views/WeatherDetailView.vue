@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 interface WeatherData {
@@ -43,11 +43,11 @@ interface WeatherData {
 const route = useRoute()
 const router = useRouter()
 
-const cityName = ref(route.params.city as string)
-const lat = ref(parseFloat(route.query.lat as string))
-const lon = ref(parseFloat(route.query.lon as string))
-const country = ref(route.query.country as string)
-const state = ref(route.query.state as string)
+const cityName = computed(() => (route.query.city as string) || (route.params.city as string))
+const lat = computed(() => parseFloat(route.query.lat as string))
+const lon = computed(() => parseFloat(route.query.lon as string))
+const country = computed(() => route.query.country as string)
+const state = computed(() => route.query.state as string)
 
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -110,6 +110,10 @@ const fetchWeatherData = async () => {
 const goBack = () => {
   router.push('/')
 }
+
+watch([lat, lon], () => {
+  fetchWeatherData()
+})
 
 onMounted(() => {
   fetchWeatherData()

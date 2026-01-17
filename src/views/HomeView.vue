@@ -95,7 +95,8 @@ const selectCity = (city: CitySearchResult) => {
       lat: city.lat. toString(),
       lon: city.lon.toString(),
       country: city.country,
-      state: city.state || ''
+      state: city.state || '',
+      city: city.name
     }
   })
 }
