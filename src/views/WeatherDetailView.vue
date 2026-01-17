@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import FavoriteButton from '../components/FavoriteButton.vue'
 
 interface WeatherData {
   current: {
@@ -139,7 +140,15 @@ onMounted(() => {
 
       <div v-else-if="weatherData" class="weather-content">
         <div class="location-header">
-          <h1>{{ cityName }}</h1>
+          <div class="header-row">
+            <h1>{{ cityName }}</h1>
+            <FavoriteButton
+              :locationName="cityName"
+              :country="country"
+              :latitude="lat"
+              :longitude="lon"
+            />
+          </div>
           <p class="location-info">
             {{ state ?  `${state}, ` : '' }}{{ country }}
           </p>
@@ -379,10 +388,19 @@ onMounted(() => {
   margin-bottom: 1rem;
 }
 
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
 .location-header h1 {
   color:  white;
   font-size:  3rem;
-  margin: 0 0 0.5rem 0;
+  margin: 0;
   font-weight: 700;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

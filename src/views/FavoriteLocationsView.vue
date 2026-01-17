@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import LocationItem, { type FavoriteLocation } from '../components/LocationItem.vue'
 
 const locations = ref<FavoriteLocation[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 
+const router = useRouter()
 const BACKEND_URL = import.meta.env. VITE_BACKEND_URL ??  'http://localhost:8080'
 
 const fetchLocations = async () => {
@@ -14,6 +16,12 @@ const fetchLocations = async () => {
     error.value = null
 
     const token = localStorage. getItem('token')
+    
+    if (!token) {
+      // Kein Token vorhanden -> direkt zum Login oder Fehler anzeigen
+      error.value = "Nicht eingeloggt."
+      return
+    }
 
     const response = await fetch(`${BACKEND_URL}/favoriteLocations`, {
       method: 'GET',
@@ -22,6 +30,14 @@ const fetchLocations = async () => {
         'Content-Type': 'application/json'
       }
     })
+
+    if (response.status === 401 || response.status === 403) {
+      // Token ungültig -> Logout erzwingen
+      localStorage.removeItem('token')
+      window.dispatchEvent(new CustomEvent('auth-changed'))
+      router.push('/login')
+      return
+    }
 
     if (!response.ok) {
       throw new Error(`Status: ${response.status}`)
