@@ -4,7 +4,7 @@ import { ref } from 'vue'
 interface CitySearchResult {
   name: string
   country: string
-  state?:  string
+  state?:  string | null
   lat: number
   lon: number
 }
