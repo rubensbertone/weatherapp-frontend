@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history:  createWebHistory(import.meta. env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -12,6 +12,11 @@ const router = createRouter({
       path: '/home',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/weather/: city',
+      name: 'weather',
+      component: () => import('@/views/WeatherDetailView.vue')
     },
     {
       path: '/register',
@@ -24,7 +29,7 @@ const router = createRouter({
       component: () => import('@/views/LoginView.vue')
     },
     {
-      path: '/favoriteLocations',
+      path:  '/favoriteLocations',
       name: 'favoriteLocations',
       component: () => import('@/views/FavoriteLocationsView.vue')
     }

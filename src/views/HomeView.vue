@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 interface CitySearchResult {
   name: string
@@ -103,7 +105,24 @@ const closeSuggestions = () => {
   }, 200)
 }
 
-// ...  rest of the code
+const selectCity = (city: CitySearchResult) => {
+  searchQuery.value = `${city.name}, ${city. country}`
+  suggestions.value = []
+  hasSearched.value = false
+
+  router.push({
+    name: 'weather',
+    params: { city: city.name },
+    query: {
+      lat: city.lat. toString(),
+      lon: city.lon.toString(),
+      country: city.country,
+      state: city.state || ''
+    }
+  })
+}
+
+
 </script>
 
 <template>
