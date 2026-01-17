@@ -24,7 +24,7 @@ const searchQuery = ref('')
 const suggestions = ref<CitySearchResult[]>([])
 const isLoggedIn = ref(false)
 const isLoading = ref(false)
-const hasSearched = ref(false)  // ✅ NEU:  Track ob eine Suche durchgeführt wurde
+const hasSearched = ref(false)
 const typingTimer = ref<number | null>(null)
 
 const BACKEND_URL = import.meta. env.VITE_BACKEND_URL ??  'http://localhost:8080'
@@ -33,12 +33,12 @@ const SEARCH_DELAY = 1000
 const fetchSuggestions = async (query:  string) => {
   if (query.length < MIN_SEARCH_CHARS) {
     suggestions.value = []
-    hasSearched.value = false  // ✅ Reset wenn zu kurz
+    hasSearched.value = false
     return
   }
 
   isLoading.value = true
-  hasSearched.value = false  // ✅ Reset vor neuer Suche
+  hasSearched.value = false
 
   try {
     const response = await fetch(
@@ -62,7 +62,7 @@ const fetchSuggestions = async (query:  string) => {
     suggestions.value = []
   } finally {
     isLoading.value = false
-    hasSearched.value = true  // ✅ Suche abgeschlossen
+    hasSearched.value = true
   }
 }
 
@@ -71,7 +71,7 @@ const onInput = () => {
     clearTimeout(typingTimer.value)
   }
 
-  hasSearched.value = false  // ✅ Reset beim Tippen
+  hasSearched.value = false
 
   if (searchQuery.value.length >= MIN_SEARCH_CHARS) {
     typingTimer.value = window.setTimeout(() => {
@@ -105,7 +105,7 @@ const onSearchClick = () => {
   if (! showSearch.value) {
     searchQuery.value = ''
     suggestions.value = []
-    hasSearched.value = false  // ✅ Reset beim Schließen
+    hasSearched.value = false
   }
 }
 
