@@ -10,26 +10,21 @@ const props = defineProps<{
 
 const loading = ref(false)
 const isSaved = ref(false)
+const isAuth = ref(!!localStorage.getItem('token'))
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8080'
 
 const addToFavorites = async () => {
-  if (isSaved.value) return
+  if (isSaved.value || !isAuth.value) return
 
   loading.value = true
   const token = localStorage.getItem('token')
-
-  if (!token) {
-    alert('Bitte logge dich ein, um Favoriten zu speichern.')
-    loading.value = false
-    return
-  }
 
   try {
     const response = await fetch(`${BACKEND_URL}/favoriteLocations`, {
       method: 'POST',
       headers: {
-        'Authorization': token,
+        'Authorization': token || '',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -42,11 +37,6 @@ const addToFavorites = async () => {
 
     if (response.ok) {
       isSaved.value = true
-    } else {
-      console.error('Fehler beim Speichern:', response.status)
-      if (response.status === 401 || response.status === 403) {
-        alert('Sitzung abgelaufen. Bitte neu einloggen.')
-      }
     }
   } catch (e) {
     console.error('Netzwerkfehler', e)
@@ -57,44 +47,68 @@ const addToFavorites = async () => {
 </script>
 
 <template>
-  <button 
-    class="fav-btn" 
-    @click="addToFavorites" 
+  <button
+    v-if="isAuth"
+    class="fav-circle-btn"
+    @click="addToFavorites"
     :disabled="loading || isSaved"
-    :class="{ 'is-saved': isSaved }"
-    title="Zu Favoriten hinzufügen"
+    :class="{ 'is-saved': isSaved, 'is-loading': loading }"
+    :title="isSaved ? 'In Favoriten gespeichert' : 'Zu Favoriten hinzufügen'"
   >
-    <span v-if="loading">⏳</span>
-    <span v-else-if="isSaved">★ Gespeichert</span>
-    <span v-else>☆ Favorisieren</span>
+    <span class="icon">
+      <template v-if="loading">⏳</template>
+      <template v-else-if="isSaved">❤️</template>
+      <template v-else>🤍</template>
+    </span>
   </button>
 </template>
 
 <style scoped>
-.fav-btn {
-  background: rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
+.fav-circle-btn {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-weight: bold;
-  transition: all 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.4rem;
+  padding: 0;
+  line-height: 0;
 }
 
-.fav-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.5);
-  transform: scale(1.05);
+.fav-circle-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.15) rotate(5deg);
+  border-color: rgba(255, 255, 255, 0.8);
 }
 
-.fav-btn.is-saved {
-  background: #ffd700; /* Gold */
-  color: #333;
-  border-color: #ffd700;
+.fav-circle-btn.is-saved {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 0, 0, 0.3);
   cursor: default;
 }
 
-.fav-btn:disabled {
-  opacity: 0.8;
+.fav-circle-btn.is-loading {
+  cursor: wait;
+}
+
+.icon {
+  display: inline-block;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.is-saved .icon {
+  animation: pulse 0.4s ease-out;
 }
 </style>
