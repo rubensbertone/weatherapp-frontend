@@ -1,54 +1,65 @@
-# weatherapp-frontend
+# Weather App Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Willkommen bei der Weather App! Diese Anwendung ermöglicht es dir, Wetterdaten für Städte weltweit abzurufen und deine Lieblingsorte zu speichern.
 
-## Recommended IDE Setup
+## Funktionen & Benutzung
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Die App bietet folgende Hauptfunktionen für Nutzer:
 
-## Recommended Browser Setup
+### 1. Wetter suchen
+*   Auf der Startseite kannst du über den Button **"Stadt suchen"** die Suchleiste öffnen.
+*   Gib den Namen einer Stadt ein (mindestens 3 Zeichen).
+*   Wähle aus den automatischen Vorschlägen den gewünschten Ort aus.
+*   Du wirst zur Detailansicht weitergeleitet, wo du aktuelle Wetterinformationen siehst.
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+### 2. Account erstellen (Registrieren)
+*   Um Orte speichern zu können, benötigst du einen Account.
+*   Klicke auf **"Registrieren"** in der Navigation oder auf der Startseite.
+*   Wähle einen Benutzernamen und ein sicheres Passwort.
+*   Nach erfolgreicher Registrierung kannst du dich direkt einloggen.
 
-## Type Support for `.vue` Imports in TS
+### 3. Einloggen
+*   Klicke auf **"Login"**, um dich mit deinen Zugangsdaten anzumelden.
+*   Nach dem Login hast du Zugriff auf deine persönlichen Favoriten.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+### 4. Favoriten verwalten
+*   **Speichern:** Wenn du eingeloggt bist, erscheint in der Wetter-Ansicht ein Herz-Symbol. Klicke darauf, um den aktuellen Ort zu deinen Favoriten hinzuzufügen.
+*   **Ansehen:** Über den Menüpunkt **"Favoriten"** gelangst du zu einer Übersicht all deiner gespeicherten Orte.
+*   Von dort aus kannst du schnell wieder auf das Wetter deiner Lieblingsstädte zugreifen.
 
-## Customize configuration
+### 5. Ausloggen
+*   Über den **"Logout"**-Button in der Navigation kannst du deine Sitzung sicher beenden.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+---
 
-## Project Setup
+## Technische Details
 
-```sh
-npm install
-```
+Dieses Projekt wurde mit [Vue 3](https://vuejs.org/) und [Vite](https://vitejs.dev/) erstellt.
 
-### Compile and Hot-Reload for Development
+### Voraussetzungen
 
-```sh
-npm run dev
-```
+*   Node.js (Version 20 oder höher empfohlen)
+*   Ein laufendes Backend (siehe Backend-Repository), standardmäßig unter `http://localhost:8080` erreichbar.
 
-### Type-Check, Compile and Minify for Production
+### Installation & Start
+
+1.  Abhängigkeiten installieren:
+    ```sh
+    npm install
+    ```
+
+2.  Entwicklungsserver starten:
+    ```sh
+    npm run dev
+    ```
+
+3.  Tests ausführen:
+    ```sh
+    npm run test:unit
+    ```
+
+### Build für Produktion
 
 ```sh
 npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
 ```
