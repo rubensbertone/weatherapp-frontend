@@ -210,7 +210,7 @@ onMounted(() => { fetchWeatherData(); checkIfFavorite() })
           <div v-for="(alert, index) in weatherData.alerts" :key="index" class="alert-card">
             <div class="alert-header">
               <span class="alert-icon">⚠️</span>
-              <h3>{{ alert.type || 'Wetterwarnung' }}</h3>
+              <h3>{{'Wetterwarnung'}}</h3>
             </div>
             <p class="alert-message">{{ alert.message }}</p>
             <div class="alert-severity">Stufe: {{ alert.severity }}</div>
