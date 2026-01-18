@@ -128,6 +128,38 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('auth-changed', checkLoginStatus)
 })
+
+const isLocating = ref(false)
+
+const locateMe = () => {
+  if (!navigator.geolocation) {
+    alert('Geolocation wird von deinem Browser nicht unterstützt.')
+    return
+  }
+
+  isLocating.value = true
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const { latitude, longitude } = position.coords
+
+      router.push({
+        name: 'weather',
+        params: { city: 'Mein Standort' },
+        query: {
+          lat: latitude.toString(),
+          lon: longitude.toString(),
+          city: 'Mein Standort'
+        }
+      })
+      isLocating.value = false
+    },
+    (error) => {
+      console.error('Fehler bei Geolocation:', error)
+      alert('Standort konnte nicht ermittelt werden. Bitte prüfe deine Browser-Berechtigungen.')
+      isLocating.value = false
+    }
+  )
+}
 </script>
 
 <template>
@@ -184,6 +216,10 @@ onUnmounted(() => {
       <div class="actions">
         <button class="btn outline" @click="onSearchClick">
           {{ showSearch ? 'Abbrechen' : 'Stadt suchen' }}
+        </button>
+
+        <button class="btn outline" @click="locateMe" :disabled="isLocating">
+          {{ isLocating ? 'Suche...' : 'Standort nutzen' }}
         </button>
       </div>
 
