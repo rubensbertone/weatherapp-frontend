@@ -142,7 +142,7 @@ const toggleFavorite = async () => {
   favLoading.value = true
   try {
     if (isFavorite.value) {
-      const response = await fetch(`${BACKEND_URL}/favoriteLocations?lat=${lat.value}&lon=${lon.value}`, {
+      const response = await fetch(`${BACKEND_URL}/favoriteLocations?latitude=${lat.value}&longitude=${lon.value}`, {
         method: 'DELETE', headers: { 'Authorization': token }
       })
       if (response.ok) isFavorite.value = false
