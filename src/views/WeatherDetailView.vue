@@ -81,11 +81,19 @@ const getAqiColor = (aqi: number): string => {
   if (aqi <= 300) return '#9c27b0'
   return '#8b0000'
 }
+
+const units = ref('m')
+
+const toggleUnits = () => {
+  units.value = units.value === 'm' ? 'e' : 'm'
+  fetchWeatherData()
+}
+
 const fetchWeatherData = async () => {
   loading.value = true
   error.value = null
   try {
-    const response = await fetch(`${BACKEND_URL}/api/weather/details?lat=${lat.value}&lon=${lon.value}`)
+    const response = await fetch(`${BACKEND_URL}/api/weather/details?lat=${lat.value}&lon=${lon.value}&units=${units.value}`)
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
 
     const data = await response.json()
@@ -181,6 +189,11 @@ onMounted(() => { fetchWeatherData(); checkIfFavorite() })
 
       <div v-else-if="weatherData" class="weather-content">
         <div class="location-header">
+          <div class="unit-toggle">
+            <button @click="toggleUnits" class="btn-unit">
+              Einheit: {{ units === 'm' ? '°C (Metrisch)' : '°F (Imperial)' }}
+            </button>
+          </div>
           <div class="header-row">
             <h1>{{ cityName }}</h1>
             <button v-if="isAuth" class="fav-circle-btn" @click="toggleFavorite" :disabled="favLoading" :class="{ 'is-saved': isFavorite }">
@@ -197,8 +210,12 @@ onMounted(() => { fetchWeatherData(); checkIfFavorite() })
           <div class="current-main">
             <div class="temp-display">
               <div class="temp-info">
-                <div class="temperature">{{ Math.round(weatherData.current.temp) }}°C</div>
-                <div class="feels-like">Gefühlt {{ Math.round(weatherData.current.feelsLike) }}°C</div>
+                <div class="temperature">
+                  {{ Math.round(weatherData.current.temp) }}{{ units === 'm' ? '°C' : '°F' }}
+                </div>
+                <div class="feels-like">
+                  Gefühlt {{ Math.round(weatherData.current.feelsLike) }}{{ units === 'm' ? '°C' : '°F' }}
+                </div>
                 <div class="description">{{ weatherData.current.description }}</div>
               </div>
             </div>
@@ -210,7 +227,9 @@ onMounted(() => { fetchWeatherData(); checkIfFavorite() })
             </div>
             <div class="detail-item">
               <div class="detail-label">Wind</div>
-              <div class="detail-value">{{ Math.round(weatherData.current.windSpeed) }} km/h</div>
+              <div class="detail-value">
+                {{ Math.round(weatherData.current.windSpeed) }} {{ units === 'm' ? 'km/h' : 'mph' }}
+              </div>
             </div>
             <div class="detail-item">
               <div class="detail-label">UV-Index</div>
@@ -226,7 +245,9 @@ onMounted(() => { fetchWeatherData(); checkIfFavorite() })
             </div>
             <div class="detail-item">
               <div class="detail-label">Sichtweite</div>
-              <div class="detail-value">{{ weatherData.current.visibility }} km</div>
+              <div class="detail-value">
+                {{ weatherData.current.visibility }} {{ units === 'm' ? 'km' : 'mi' }}
+              </div>
             </div>
           </div>
         </div>
@@ -236,7 +257,9 @@ onMounted(() => { fetchWeatherData(); checkIfFavorite() })
           <div class="hourly-scroll">
             <div v-for="hour in weatherData.hourly" :key="hour.timestamp" class="hourly-item">
               <div class="hour-time">{{ formatTime(hour.timestamp) }}</div>
-              <div class="hour-temp">{{ Math.round(hour.temp) }}°C</div>
+              <div class="hour-temp">
+                {{ Math.round(hour.temp) }}{{ units === 'm' ? '°C' : '°F' }}
+              </div>
             </div>
           </div>
         </div>
@@ -248,9 +271,11 @@ onMounted(() => { fetchWeatherData(); checkIfFavorite() })
               <div class="forecast-day">{{ formatDay(day.timestamp) }}</div>
               <div class="forecast-desc">{{ day.description }}</div>
               <div class="forecast-temps">
-                <span class="temp-max">{{ Math.round(day.tempMax) }}°</span>
-                <span class="temp-separator">/</span>
-                <span class="temp-min">{{ Math.round(day.tempMin) }}°</span>
+                <div class="forecast-temps">
+                  <span class="temp-max">{{ Math.round(day.tempMax) }}°</span>
+                  <span class="temp-separator">/</span>
+                  <span class="temp-min">{{ Math.round(day.tempMin) }}°</span>
+                </div>
               </div>
             </div>
           </div>
@@ -331,4 +356,10 @@ onMounted(() => { fetchWeatherData(); checkIfFavorite() })
 .loading-state, .error-state { text-align: center; padding: 4rem; color: white; }
 .loader { width: 40px; height: 40px; border: 4px solid #fff; border-bottom-color: transparent; border-radius: 50%; display: inline-block; animation: spin 1s linear infinite; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.unit-toggle {display: flex; justify-content: flex-end; margin-bottom: 1rem;}
+
+.btn-unit {background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); color: white; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;}
+
+.btn-unit:hover {background: rgba(255, 255, 255, 0.4);}
 </style>
