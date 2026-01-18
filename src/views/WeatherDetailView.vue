@@ -205,6 +205,18 @@ onMounted(() => { fetchWeatherData(); checkIfFavorite() })
           <p class="coordinates">{{ lat.toFixed(4) }}°, {{ lon.toFixed(4) }}°</p>
         </div>
 
+        <!-- Alerts Section -->
+        <div v-if="weatherData.alerts && weatherData.alerts.length > 0" class="alerts-container">
+          <div v-for="(alert, index) in weatherData.alerts" :key="index" class="alert-card">
+            <div class="alert-header">
+              <span class="alert-icon">⚠️</span>
+              <h3>{{ alert.type || 'Wetterwarnung' }}</h3>
+            </div>
+            <p class="alert-message">{{ alert.message }}</p>
+            <div class="alert-severity">Stufe: {{ alert.severity }}</div>
+          </div>
+        </div>
+
         <div v-if="weatherData.current" class="current-weather glass-card">
           <div class="section-header"><h2>Aktuelle Bedingungen</h2></div>
           <div class="current-main">
@@ -362,4 +374,54 @@ onMounted(() => { fetchWeatherData(); checkIfFavorite() })
 .btn-unit {background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); color: white; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;}
 
 .btn-unit:hover {background: rgba(255, 255, 255, 0.4);}
+
+/* Alerts Styles */
+.alerts-container {
+  margin-bottom: 1.5rem;
+}
+
+.alert-card {
+  background: rgba(255, 82, 82, 0.9); /* Rötlicher Hintergrund für Warnungen */
+  color: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.alert-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.alert-icon {
+  font-size: 1.5rem;
+}
+
+.alert-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.alert-message {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.alert-severity {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: rgba(0, 0, 0, 0.2);
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 8px;
+}
 </style>
